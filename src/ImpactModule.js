@@ -98,6 +98,7 @@ export default function ImpactModule({ onScoreChange }) {
   return (
     <div className="p-6 max-w-6xl mx-auto">
       <h2 className="text-xl font-bold mb-4">Impact 模块评估</h2>
+      <p className="text-sm text-gray-600 mb-2">本因素主要是考感职位影响力的性质及其相应的贡献程度。在评分时，首先确定职位上的影响力性质，随后确定贡献的程度是有限、部分、直接、显著、还是首要的。</p>
 
       <div className="overflow-auto mb-6">
         <p className="text-sm text-gray-600 mb-2">评分细则：</p>
