@@ -6,9 +6,17 @@ import "./index.css";
 const root = ReactDOM.createRoot(document.getElementById("root"));
 root.render(
   <React.StrictMode>
-    <EvaluationSummary />
+    <div className="min-h-screen flex flex-col">
+      <main className="flex-grow">
+        <EvaluationSummary />
+      </main>
+      <footer className="text-center text-sm text-gray-500 mb-4">
+        © 2025 职位评估工具 | Developed by Lychee
+      </footer>
+    </div>
   </React.StrictMode>
 );
+
 
 
 /*
