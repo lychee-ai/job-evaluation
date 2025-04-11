@@ -45,7 +45,7 @@ const getInnovationScore = (level, complexity) => {
   }
 };
 
-export default function InnovationModule() {
+export default function InnovationModule({ onScoreChange }) {
   const [level, setLevel] = useState("");
   const [complexity, setComplexity] = useState("");
   const [score, setScore] = useState(null);
@@ -53,6 +53,9 @@ export default function InnovationModule() {
   useEffect(() => {
     const result = getInnovationScore(Number(level), Number(complexity));
     setScore(result);
+    if (onScoreChange && result !== null) {
+      onScoreChange(Number(result));
+    }
   }, [level, complexity]);
 
   return (

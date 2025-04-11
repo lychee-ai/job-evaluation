@@ -1,3 +1,17 @@
+import React, { useState } from "react";
+import ReactDOM from "react-dom/client";
+import EvaluationSummary from "./EvaluationSummary";
+import "./index.css";
+
+const root = ReactDOM.createRoot(document.getElementById("root"));
+root.render(
+  <React.StrictMode>
+    <EvaluationSummary />
+  </React.StrictMode>
+);
+
+
+/*
 import React from "react";
 import ReactDOM from "react-dom/client";
 import ImpactModule from "./ImpactModule";
@@ -20,7 +34,7 @@ function App() {
 
 const root = ReactDOM.createRoot(document.getElementById("root"));
 root.render(<App />);
-
+*/
 /*
 你需要创建如下文件结构：
 - src/

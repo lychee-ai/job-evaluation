@@ -28,7 +28,7 @@ const getCommunicationScore = (comm, frame) => {
   }
 };
 
-export default function CommunicationModule() {
+export default function CommunicationModule({ onScoreChange }) {
   const [comm, setComm] = useState("");
   const [frame, setFrame] = useState("");
   const [score, setScore] = useState(null);
@@ -36,6 +36,9 @@ export default function CommunicationModule() {
   useEffect(() => {
     const result = getCommunicationScore(Number(comm), Number(frame));
     setScore(result);
+    if (onScoreChange && result !== null) {
+      onScoreChange(Number(result));
+    }
   }, [comm, frame]);
 
   return (

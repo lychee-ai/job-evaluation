@@ -56,8 +56,9 @@ const positionClassMap = [
 ];
 
 function getPositionClass(total) {
+  const roundedTotal = Math.floor(total);
   const match = positionClassMap.find(
-    (item) => total >= item.min && total <= item.max
+    (item) => roundedTotal >= item.min && roundedTotal <= item.max
   );
   return match ? match.level : "未知";
 }
@@ -69,6 +70,8 @@ export default function EvaluationSummary() {
     innovation: 0,
     knowledge: 0,
   });
+
+  const [info, setInfo] = useState({ jobTitle: "", evaluator: "" });
 
   const total =
     Number(scores.impact) +
@@ -82,14 +85,39 @@ export default function EvaluationSummary() {
     <div className="p-6 max-w-7xl mx-auto">
       <h1 className="text-3xl font-bold text-center mb-6">职位评估汇总</h1>
 
+      <div className="mb-8 grid grid-cols-1 md:grid-cols-2 gap-4">
+        <div>
+          <label className="block font-semibold">职位名称：</label>
+          <input
+            type="text"
+            className="w-full p-2 border rounded"
+            placeholder="请输入职位名称"
+            value={info.jobTitle}
+            onChange={(e) => setInfo({ ...info, jobTitle: e.target.value })}
+          />
+        </div>
+        <div>
+          <label className="block font-semibold">填写人姓名：</label>
+          <input
+            type="text"
+            className="w-full p-2 border rounded"
+            placeholder="请输入您的姓名"
+            value={info.evaluator}
+            onChange={(e) => setInfo({ ...info, evaluator: e.target.value })}
+          />
+        </div>
+      </div>
+
       <ImpactModule onScoreChange={(val) => setScores((s) => ({ ...s, impact: val }))} />
       <CommunicationModule onScoreChange={(val) => setScores((s) => ({ ...s, communication: val }))} />
       <InnovationModule onScoreChange={(val) => setScores((s) => ({ ...s, innovation: val }))} />
       <KnowledgeModule onScoreChange={(val) => setScores((s) => ({ ...s, knowledge: val }))} />
 
       <div className="text-xl font-bold mt-10 text-center">
-        <p>💡 四项评分总分：{total} 分</p>
+        <p>💼 职位：{info.jobTitle || "未填写"}</p>
+        <p>🧮 四项评分总分：{total} 分</p>
         <p>🏅 对应职位等级（Position Class）：P{positionClass}</p>
+        <p className="mt-2 text-sm text-gray-500">📋 由 {info.evaluator || "未填写"} 填写</p>
       </div>
     </div>
   );

@@ -44,7 +44,7 @@ const getKnowledgeScore = (k, t, w) => {
   return (values.reduce((a, b) => a + b, 0) / values.length).toFixed(1);
 };
 
-export default function KnowledgeModule() {
+export default function KnowledgeModule({ onScoreChange }) {
   const [knowledge, setKnowledge] = useState("");
   const [team, setTeam] = useState("");
   const [width, setWidth] = useState("");
@@ -57,6 +57,9 @@ export default function KnowledgeModule() {
       Number(width)
     );
     setScore(result);
+    if (onScoreChange && result !== null) {
+      onScoreChange(Number(result));
+    }
   }, [knowledge, team, width]);
 
   return (

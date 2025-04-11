@@ -51,7 +51,7 @@ const getImpactScore = (impact, contribution) => {
   }
 };
 
-export default function ImpactModule() {
+export default function ImpactModule({ onScoreChange }) {
   const [impact, setImpact] = useState("");
   const [contribution, setContribution] = useState("");
   const [score, setScore] = useState(null);
@@ -59,6 +59,9 @@ export default function ImpactModule() {
   useEffect(() => {
     const result = getImpactScore(Number(impact), Number(contribution));
     setScore(result);
+    if (onScoreChange && result !== null) {
+      onScoreChange(Number(result));
+    }
   }, [impact, contribution]);
 
   return (
