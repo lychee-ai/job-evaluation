@@ -51,6 +51,37 @@ const getImpactScore = (impact, contribution) => {
   }
 };
 
+const Dropdown = ({ label, options, value, onChange }) => {
+  const [open, setOpen] = useState(false);
+  return (
+    <div className="relative mb-4">
+      <label className="block font-semibold mb-1">{label}</label>
+      <div
+        className="p-2 border rounded cursor-pointer bg-white"
+        onClick={() => setOpen(!open)}
+      >
+        {value || "请选择"}
+      </div>
+      {open && (
+        <ul className="absolute z-10 bg-white border rounded shadow w-full max-h-60 overflow-auto">
+          {options.map((opt) => (
+            <li
+              key={opt}
+              className="p-2 hover:bg-blue-100 cursor-pointer"
+              onClick={() => {
+                onChange(opt);
+                setOpen(false);
+              }}
+            >
+              {opt}
+            </li>
+          ))}
+        </ul>
+      )}
+    </div>
+  );
+};
+
 export default function ImpactModule({ onScoreChange }) {
   const [impact, setImpact] = useState("");
   const [contribution, setContribution] = useState("");
@@ -67,7 +98,6 @@ export default function ImpactModule({ onScoreChange }) {
   return (
     <div className="p-6 max-w-6xl mx-auto">
       <h2 className="text-xl font-bold mb-4">Impact 模块评估</h2>
-      <p className="text-sm text-gray-600 mb-2">本因素主要是考感职位影响力的性质及其相应的贡献程度。在评分时，首先确定职位上的影响力性质，随后确定贡献的程度是有限、部分、直接、显著、还是首要的。</p>
 
       <div className="overflow-auto mb-6">
         <p className="text-sm text-gray-600 mb-2">评分细则：</p>
@@ -78,31 +108,19 @@ export default function ImpactModule({ onScoreChange }) {
         />
       </div>
 
-      <div className="mt-6">
-        <label className="block font-semibold">影响等级（1~5）：</label>
-        <select
-          className="w-full p-2 border rounded mt-1"
-          value={impact}
-          onChange={(e) => setImpact(e.target.value)}
-        >
-          <option value="">请选择</option>
-          {[1, 2, 3, 4, 5].map((n) => (
-            <option key={n} value={n}>{n}</option>
-          ))}
-        </select>
+      <Dropdown
+        label="影响等级（1~5）"
+        options={[1, 2, 3, 4, 5]}
+        value={impact}
+        onChange={setImpact}
+      />
 
-        <label className="block font-semibold mt-4">贡献等级（1~5，支持 0.5）：</label>
-        <select
-          className="w-full p-2 border rounded mt-1"
-          value={contribution}
-          onChange={(e) => setContribution(e.target.value)}
-        >
-          <option value="">请选择</option>
-          {[1, 1.5, 2, 2.5, 3, 3.5, 4, 4.5, 5].map((n) => (
-            <option key={n} value={n}>{n}</option>
-          ))}
-        </select>
-      </div>
+      <Dropdown
+        label="贡献等级（1~5，支持 0.5）"
+        options={[1, 1.5, 2, 2.5, 3, 3.5, 4, 4.5, 5]}
+        value={contribution}
+        onChange={setContribution}
+      />
 
       <div className="text-xl font-bold mt-6">
         Impact得分：{score !== null ? `${score} 分` : "-"}

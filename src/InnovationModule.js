@@ -45,6 +45,37 @@ const getInnovationScore = (level, complexity) => {
   }
 };
 
+const Dropdown = ({ label, options, value, onChange }) => {
+  const [open, setOpen] = useState(false);
+  return (
+    <div className="relative mb-4">
+      <label className="block font-semibold mb-1">{label}</label>
+      <div
+        className="p-2 border rounded cursor-pointer bg-white"
+        onClick={() => setOpen(!open)}
+      >
+        {value || "请选择"}
+      </div>
+      {open && (
+        <ul className="absolute z-10 bg-white border rounded shadow w-full max-h-60 overflow-auto">
+          {options.map((opt) => (
+            <li
+              key={opt}
+              className="p-2 hover:bg-blue-100 cursor-pointer"
+              onClick={() => {
+                onChange(opt);
+                setOpen(false);
+              }}
+            >
+              {opt}
+            </li>
+          ))}
+        </ul>
+      )}
+    </div>
+  );
+};
+
 export default function InnovationModule({ onScoreChange }) {
   const [level, setLevel] = useState("");
   const [complexity, setComplexity] = useState("");
@@ -62,7 +93,7 @@ export default function InnovationModule({ onScoreChange }) {
     <div className="p-6 max-w-6xl mx-auto">
       <h2 className="text-xl font-bold mb-4">Innovation 模块评估</h2>
       <p className="text-sm text-gray-600 mb-2">本因素着眼于职位所需要的创新水平。首先确定对职位期望的创新水平，然后决定该创新水平的复杂程度。</p>
-      
+
       <div className="overflow-auto mb-6">
         <p className="text-sm text-gray-600 mb-2">评分细则：</p>
         <img
@@ -72,31 +103,19 @@ export default function InnovationModule({ onScoreChange }) {
         />
       </div>
 
-      <div className="mt-6">
-        <label className="block font-semibold">创新等级（1~6，支持 0.5）：</label>
-        <select
-          className="w-full p-2 border rounded mt-1"
-          value={level}
-          onChange={(e) => setLevel(e.target.value)}
-        >
-          <option value="">请选择</option>
-          {[1, 1.5, 2, 2.5, 3, 3.5, 4, 4.5, 5, 5.5, 6].map((n) => (
-            <option key={n} value={n}>{n}</option>
-          ))}
-        </select>
+      <Dropdown
+        label="创新等级（1~6，支持 0.5）"
+        options={[1, 1.5, 2, 2.5, 3, 3.5, 4, 4.5, 5, 5.5, 6]}
+        value={level}
+        onChange={setLevel}
+      />
 
-        <label className="block font-semibold mt-4">复杂性等级（1~4，支持 0.5）：</label>
-        <select
-          className="w-full p-2 border rounded mt-1"
-          value={complexity}
-          onChange={(e) => setComplexity(e.target.value)}
-        >
-          <option value="">请选择</option>
-          {[1, 1.5, 2, 2.5, 3, 3.5, 4].map((n) => (
-            <option key={n} value={n}>{n}</option>
-          ))}
-        </select>
-      </div>
+      <Dropdown
+        label="复杂性等级（1~4，支持 0.5）"
+        options={[1, 1.5, 2, 2.5, 3, 3.5, 4]}
+        value={complexity}
+        onChange={setComplexity}
+      />
 
       <div className="text-xl font-bold mt-6">
         Innovation得分：{score !== null ? `${score} 分` : "-"}

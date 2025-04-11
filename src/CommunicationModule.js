@@ -28,6 +28,37 @@ const getCommunicationScore = (comm, frame) => {
   }
 };
 
+const Dropdown = ({ label, options, value, onChange }) => {
+  const [open, setOpen] = useState(false);
+  return (
+    <div className="relative mb-4">
+      <label className="block font-semibold mb-1">{label}</label>
+      <div
+        className="p-2 border rounded cursor-pointer bg-white"
+        onClick={() => setOpen(!open)}
+      >
+        {value || "请选择"}
+      </div>
+      {open && (
+        <ul className="absolute z-10 bg-white border rounded shadow w-full max-h-60 overflow-auto">
+          {options.map((opt) => (
+            <li
+              key={opt}
+              className="p-2 hover:bg-blue-100 cursor-pointer"
+              onClick={() => {
+                onChange(opt);
+                setOpen(false);
+              }}
+            >
+              {opt}
+            </li>
+          ))}
+        </ul>
+      )}
+    </div>
+  );
+};
+
 export default function CommunicationModule({ onScoreChange }) {
   const [comm, setComm] = useState("");
   const [frame, setFrame] = useState("");
@@ -57,29 +88,19 @@ export default function CommunicationModule({ onScoreChange }) {
       </div>
 
       <div className="mt-6">
-        <label className="block font-semibold">沟通等级（1~5，支持 0.5）：</label>
-        <select
-          className="w-full p-2 border rounded mt-1"
+        <Dropdown
+          label="沟通等级（1~5，支持 0.5）"
+          options={[1, 1.5, 2, 2.5, 3, 3.5, 4, 4.5, 5]}
           value={comm}
-          onChange={(e) => setComm(e.target.value)}
-        >
-          <option value="">请选择</option>
-          {[1, 1.5, 2, 2.5, 3, 3.5, 4, 4.5, 5].map((n) => (
-            <option key={n} value={n}>{n}</option>
-          ))}
-        </select>
+          onChange={setComm}
+        />
 
-        <label className="block font-semibold mt-4">架构等级（1~4）：</label>
-        <select
-          className="w-full p-2 border rounded mt-1"
+        <Dropdown
+          label="架构等级（1~4）"
+          options={[1, 2, 3, 4]}
           value={frame}
-          onChange={(e) => setFrame(e.target.value)}
-        >
-          <option value="">请选择</option>
-          {[1, 2, 3, 4].map((n) => (
-            <option key={n} value={n}>{n}</option>
-          ))}
-        </select>
+          onChange={setFrame}
+        />
       </div>
 
       <div className="text-xl font-bold mt-6">

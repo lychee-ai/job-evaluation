@@ -1,4 +1,6 @@
 import React, { useState } from "react";
+import html2canvas from "html2canvas";
+import jsPDF from "jspdf";
 import ImpactModule from "./ImpactModule";
 import CommunicationModule from "./CommunicationModule";
 import InnovationModule from "./InnovationModule";
@@ -72,6 +74,7 @@ export default function EvaluationSummary() {
   });
 
   const [info, setInfo] = useState({ jobTitle: "", evaluator: "" });
+  const [timestamp] = useState(new Date().toLocaleString());
 
   const total =
     Number(scores.impact) +
@@ -80,6 +83,38 @@ export default function EvaluationSummary() {
     Number(scores.knowledge);
 
   const positionClass = getPositionClass(total);
+
+  const handleExport = async () => {
+    const element = document.getElementById("export-section");
+
+    const canvas = await html2canvas(element, {
+      scale: 2,
+      useCORS: true,
+      scrollY: -window.scrollY,
+      windowWidth: element.scrollWidth,
+      height: element.scrollHeight,
+    });
+
+    const imgData = canvas.toDataURL("image/png");
+    const pdf = new jsPDF({ orientation: "portrait", unit: "mm", format: "a4" });
+    const imgProps = pdf.getImageProperties(imgData);
+    const pdfWidth = pdf.internal.pageSize.getWidth();
+    const imgHeight = (imgProps.height * pdfWidth) / imgProps.width;
+    let heightLeft = imgHeight;
+    let position = 0;
+
+    pdf.addImage(imgData, "PNG", 0, position, pdfWidth, imgHeight);
+    heightLeft -= pdf.internal.pageSize.getHeight();
+
+    while (heightLeft > 0) {
+      position -= pdf.internal.pageSize.getHeight();
+      pdf.addPage();
+      pdf.addImage(imgData, "PNG", 0, position, pdfWidth, imgHeight);
+      heightLeft -= pdf.internal.pageSize.getHeight();
+    }
+
+    pdf.save(`${info.jobTitle || '职位评估'}.pdf`);
+  };
 
   return (
     <div className="p-6 max-w-7xl mx-auto">
@@ -108,16 +143,28 @@ export default function EvaluationSummary() {
         </div>
       </div>
 
-      <ImpactModule onScoreChange={(val) => setScores((s) => ({ ...s, impact: val }))} />
-      <CommunicationModule onScoreChange={(val) => setScores((s) => ({ ...s, communication: val }))} />
-      <InnovationModule onScoreChange={(val) => setScores((s) => ({ ...s, innovation: val }))} />
-      <KnowledgeModule onScoreChange={(val) => setScores((s) => ({ ...s, knowledge: val }))} />
+      <div id="export-section">
+        <ImpactModule onScoreChange={(val) => setScores((s) => ({ ...s, impact: val }))} />
+        <CommunicationModule onScoreChange={(val) => setScores((s) => ({ ...s, communication: val }))} />
+        <InnovationModule onScoreChange={(val) => setScores((s) => ({ ...s, innovation: val }))} />
+        <KnowledgeModule onScoreChange={(val) => setScores((s) => ({ ...s, knowledge: val }))} />
 
-      <div className="text-xl font-bold mt-10 text-center">
-        <p>💼 职位：{info.jobTitle || "未填写"}</p>
-        <p>🧮 四项评分总分：{total} 分</p>
-        <p>🏅 对应职位等级（Position Class）：P{positionClass}</p>
-        <p className="mt-2 text-sm text-gray-500">📋 由 {info.evaluator || "未填写"} 填写</p>
+        <div className="text-xl font-bold mt-10 text-center">
+          <p>💼 职位：{info.jobTitle || "未填写"}</p>
+          <p>🧮 四项评分总分：{total} 分</p>
+          <p>🏅 对应职位等级（Position Class）：P{positionClass}</p>
+          <p className="mt-2 text-sm text-gray-500">📋 由 {info.evaluator || "未填写"} 填写</p>
+          <p className="text-sm text-gray-400">🕒 填写时间：{timestamp}</p>
+        </div>
+      </div>
+
+      <div className="text-center mt-6">
+        <button
+          onClick={handleExport}
+          className="bg-blue-600 text-white px-6 py-2 rounded hover:bg-blue-700"
+        >
+          导出评估结果为 PDF
+        </button>
       </div>
     </div>
   );

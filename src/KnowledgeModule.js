@@ -44,6 +44,37 @@ const getKnowledgeScore = (k, t, w) => {
   return (values.reduce((a, b) => a + b, 0) / values.length).toFixed(1);
 };
 
+const Dropdown = ({ label, options, value, onChange }) => {
+  const [open, setOpen] = useState(false);
+  return (
+    <div className="relative mb-4">
+      <label className="block font-semibold mb-1">{label}</label>
+      <div
+        className="p-2 border rounded cursor-pointer bg-white"
+        onClick={() => setOpen(!open)}
+      >
+        {value || "请选择"}
+      </div>
+      {open && (
+        <ul className="absolute z-10 bg-white border rounded shadow w-full max-h-60 overflow-auto">
+          {options.map((opt) => (
+            <li
+              key={opt}
+              className="p-2 hover:bg-blue-100 cursor-pointer"
+              onClick={() => {
+                onChange(opt);
+                setOpen(false);
+              }}
+            >
+              {opt}
+            </li>
+          ))}
+        </ul>
+      )}
+    </div>
+  );
+};
+
 export default function KnowledgeModule({ onScoreChange }) {
   const [knowledge, setKnowledge] = useState("");
   const [team, setTeam] = useState("");
@@ -77,43 +108,26 @@ export default function KnowledgeModule({ onScoreChange }) {
         />
       </div>
 
-      <div className="mt-6">
-        <label className="block font-semibold">知识等级（1~8，支持 0.5）：</label>
-        <select
-          className="w-full p-2 border rounded mt-1"
-          value={knowledge}
-          onChange={(e) => setKnowledge(e.target.value)}
-        >
-          <option value="">请选择</option>
-          {[1,1.5,2,2.5,3,3.5,4,4.5,5,5.5,6,6.5,7,7.5,8].map((n) => (
-            <option key={n} value={n}>{n}</option>
-          ))}
-        </select>
+      <Dropdown
+        label="知识等级（1~8，支持 0.5）"
+        options={[1,1.5,2,2.5,3,3.5,4,4.5,5,5.5,6,6.5,7,7.5,8]}
+        value={knowledge}
+        onChange={setKnowledge}
+      />
 
-        <label className="block font-semibold mt-4">团队角色（1~3，支持 0.5）：</label>
-        <select
-          className="w-full p-2 border rounded mt-1"
-          value={team}
-          onChange={(e) => setTeam(e.target.value)}
-        >
-          <option value="">请选择</option>
-          {[1,1.5,2,2.5,3].map((n) => (
-            <option key={n} value={n}>{n}</option>
-          ))}
-        </select>
+      <Dropdown
+        label="团队角色（1~3，支持 0.5）"
+        options={[1,1.5,2,2.5,3]}
+        value={team}
+        onChange={setTeam}
+      />
 
-        <label className="block font-semibold mt-4">职责宽度（1~3，支持 0.5）：</label>
-        <select
-          className="w-full p-2 border rounded mt-1"
-          value={width}
-          onChange={(e) => setWidth(e.target.value)}
-        >
-          <option value="">请选择</option>
-          {[1,1.5,2,2.5,3].map((n) => (
-            <option key={n} value={n}>{n}</option>
-          ))}
-        </select>
-      </div>
+      <Dropdown
+        label="职责宽度（1~3，支持 0.5）"
+        options={[1,1.5,2,2.5,3]}
+        value={width}
+        onChange={setWidth}
+      />
 
       <div className="text-xl font-bold mt-6">
         Knowledge得分：{score !== null ? `${score} 分` : "-"}
