@@ -75,7 +75,7 @@ const Dropdown = ({ label, options, value, onChange }) => {
   );
 };
 
-export default function KnowledgeModule({ onScoreChange }) {
+export default function KnowledgeModule({ onScoreChange, onInputsChange }) {
   const [knowledge, setKnowledge] = useState("");
   const [team, setTeam] = useState("");
   const [width, setWidth] = useState("");
@@ -90,6 +90,13 @@ export default function KnowledgeModule({ onScoreChange }) {
     setScore(result);
     if (onScoreChange && result !== null) {
       onScoreChange(Number(result));
+    }
+    if (onInputsChange) {
+      onInputsChange({
+        knowLedgeLevel: knowledge,
+        teamLevel: team,
+        widthLevel: width
+      });
     }
   }, [knowledge, team, width]);
 

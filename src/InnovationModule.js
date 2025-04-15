@@ -76,7 +76,7 @@ const Dropdown = ({ label, options, value, onChange }) => {
   );
 };
 
-export default function InnovationModule({ onScoreChange }) {
+export default function InnovationModule({ onScoreChange, onInputsChange }) {
   const [level, setLevel] = useState("");
   const [complexity, setComplexity] = useState("");
   const [score, setScore] = useState(null);
@@ -86,6 +86,12 @@ export default function InnovationModule({ onScoreChange }) {
     setScore(result);
     if (onScoreChange && result !== null) {
       onScoreChange(Number(result));
+    }
+    if (onInputsChange) {
+      onInputsChange({
+        innovationLevel: level,
+        complexityLevel: complexity
+      });
     }
   }, [level, complexity]);
 

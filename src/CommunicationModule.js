@@ -59,7 +59,7 @@ const Dropdown = ({ label, options, value, onChange }) => {
   );
 };
 
-export default function CommunicationModule({ onScoreChange }) {
+export default function CommunicationModule({ onScoreChange, onInputsChange }) {
   const [comm, setComm] = useState("");
   const [frame, setFrame] = useState("");
   const [score, setScore] = useState(null);
@@ -69,6 +69,12 @@ export default function CommunicationModule({ onScoreChange }) {
     setScore(result);
     if (onScoreChange && result !== null) {
       onScoreChange(Number(result));
+    }
+    if (onInputsChange) {
+      onInputsChange({
+        communicationLevel: comm,
+        frameLevel: frame
+      });
     }
   }, [comm, frame]);
 

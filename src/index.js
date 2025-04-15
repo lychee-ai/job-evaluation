@@ -1,8 +1,20 @@
 import React, { useState } from "react";
 import ReactDOM from "react-dom/client";
+import { PDFDownloadLink } from "@react-pdf/renderer";
+import EvaluationPDF from "./EvaluationPDF";
 import EvaluationSummary from "./EvaluationSummary";
 import "./index.css";
 
+
+const root = ReactDOM.createRoot(document.getElementById("root"));
+root.render(
+  <React.StrictMode>
+    <EvaluationSummary />
+  </React.StrictMode>
+);
+
+
+/*
 const root = ReactDOM.createRoot(document.getElementById("root"));
 root.render(
   <React.StrictMode>
@@ -16,7 +28,7 @@ root.render(
     </div>
   </React.StrictMode>
 );
-
+*/
 
 
 /*

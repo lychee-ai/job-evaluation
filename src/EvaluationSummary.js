@@ -1,10 +1,11 @@
 import React, { useState } from "react";
-import html2canvas from "html2canvas";
-import jsPDF from "jspdf";
+import OrganizationModule from "./OrganizationModule";
 import ImpactModule from "./ImpactModule";
 import CommunicationModule from "./CommunicationModule";
 import InnovationModule from "./InnovationModule";
 import KnowledgeModule from "./KnowledgeModule";
+import { PDFDownloadLink } from "@react-pdf/renderer";
+import EvaluationPDF from "./EvaluationPDF";
 
 const positionClassMap = [
   { min: 26, max: 50, level: 40 },
@@ -75,6 +76,9 @@ export default function EvaluationSummary() {
 
   const [info, setInfo] = useState({ jobTitle: "", evaluator: "" });
   const [timestamp] = useState(new Date().toLocaleString());
+  const [orgLevel, setOrgLevel] = useState(9);
+  const [exporting, setExporting] = useState(false);
+
 
   const total =
     Number(scores.impact) +
@@ -84,37 +88,33 @@ export default function EvaluationSummary() {
 
   const positionClass = getPositionClass(total);
 
-  const handleExport = async () => {
-    const element = document.getElementById("export-section");
+  const [orgDetails, setOrgDetails] = useState({
+    sales: "",
+    employees: "",
+    valueChains: [],
+  });
+  
+  const [impactInputs, setImpactInputs] = useState({
+    impactLevel: "",
+    contributionLevel: ""
+  });
 
-    const canvas = await html2canvas(element, {
-      scale: 2,
-      useCORS: true,
-      scrollY: -window.scrollY,
-      windowWidth: element.scrollWidth,
-      height: element.scrollHeight,
-    });
+  const [communicationInputs, setCommunicationInputs] = useState({
+    communicationLevel: "",
+    frameLevel: ""
+  });
 
-    const imgData = canvas.toDataURL("image/png");
-    const pdf = new jsPDF({ orientation: "portrait", unit: "mm", format: "a4" });
-    const imgProps = pdf.getImageProperties(imgData);
-    const pdfWidth = pdf.internal.pageSize.getWidth();
-    const imgHeight = (imgProps.height * pdfWidth) / imgProps.width;
-    let heightLeft = imgHeight;
-    let position = 0;
+  const [innovationInputs, setInnovationInputs] = useState({
+    innovationLevel: "",
+    complexityLevel: ""
+  });
 
-    pdf.addImage(imgData, "PNG", 0, position, pdfWidth, imgHeight);
-    heightLeft -= pdf.internal.pageSize.getHeight();
-
-    while (heightLeft > 0) {
-      position -= pdf.internal.pageSize.getHeight();
-      pdf.addPage();
-      pdf.addImage(imgData, "PNG", 0, position, pdfWidth, imgHeight);
-      heightLeft -= pdf.internal.pageSize.getHeight();
-    }
-
-    pdf.save(`${info.jobTitle || '职位评估'}.pdf`);
-  };
+  const [knowledgeInputs, setKnowledgeInputs] = useState({
+    knowledgeLevel: "",
+    teamLevel: "",
+    widthLevel:""
+  });
+  
 
   return (
     <div className="p-6 max-w-7xl mx-auto">
@@ -143,28 +143,76 @@ export default function EvaluationSummary() {
         </div>
       </div>
 
-      <div id="export-section">
-        <ImpactModule onScoreChange={(val) => setScores((s) => ({ ...s, impact: val }))} />
-        <CommunicationModule onScoreChange={(val) => setScores((s) => ({ ...s, communication: val }))} />
-        <InnovationModule onScoreChange={(val) => setScores((s) => ({ ...s, innovation: val }))} />
-        <KnowledgeModule onScoreChange={(val) => setScores((s) => ({ ...s, knowledge: val }))} />
+      <OrganizationModule 
+        exporting={exporting}
+        onLevelChange={setOrgLevel}
+        onDetailsChange={setOrgDetails}
+      />
+      <ImpactModule
+        orgLevel={orgLevel}
+        onScoreChange={(val) =>
+          setScores((s) => ({ ...s, impact: val }))
+        }
+        onInputsChange={setImpactInputs}
+      />
+      <CommunicationModule
+        onScoreChange={(val) =>
+          setScores((s) => ({ ...s, communication: val }))
+        }
+        onInputsChange={setCommunicationInputs}
+      />
+      <InnovationModule
+        onScoreChange={(val) =>
+          setScores((s) => ({ ...s, innovation: val }))
+        }
+        onInputsChange={setInnovationInputs}
+      />
+      <KnowledgeModule
+        onScoreChange={(val) =>
+          setScores((s) => ({ ...s, knowledge: val }))
+        }
+        onInputsChange={setKnowledgeInputs}
+      />
 
-        <div className="text-xl font-bold mt-10 text-center">
-          <p>💼 职位：{info.jobTitle || "未填写"}</p>
-          <p>🧮 四项评分总分：{total} 分</p>
-          <p>🏅 对应职位等级（Position Class）：P{positionClass}</p>
-          <p className="mt-2 text-sm text-gray-500">📋 由 {info.evaluator || "未填写"} 填写</p>
-          <p className="text-sm text-gray-400">🕒 填写时间：{timestamp}</p>
-        </div>
+      <div className="text-xl font-bold mt-10 text-center">
+        <p>💼 职位：{info.jobTitle || "未填写"}</p>
+        <p>🏢 组织规模等级：{orgLevel ?? "未评估"}</p>
+        <p>🧮 四项评分总分：{total} 分</p>
+        <p>🏅 对应职位等级（Position Class）：P{positionClass}</p>
+        <p className="mt-2 text-sm text-gray-500">📋 由 {info.evaluator || "未填写"} 填写</p>
+        <p className="text-sm text-gray-400">🕒 填写时间：{timestamp}</p>
       </div>
 
-      <div className="text-center mt-6">
-        <button
-          onClick={handleExport}
-          className="bg-blue-600 text-white px-6 py-2 rounded hover:bg-blue-700"
+      <div className="text-center mt-6 space-x-4">
+        <PDFDownloadLink
+          document={
+            <EvaluationPDF
+            info={info}
+            scores={scores}
+            orgLevel={orgLevel}
+            positionClass={positionClass}
+            timestamp={timestamp}
+            orgDetails={orgDetails}
+            impactInputs={impactInputs}
+            communicationInputs={communicationInputs}
+            innovationInputs={innovationInputs}
+            knowledgeInputs={knowledgeInputs}
+          />
+          }
+          fileName={`${info.jobTitle || "职位评估"}.pdf`}
         >
-          导出评估结果为 PDF
-        </button>
+          {({ loading }) =>
+            loading ? (
+              <button className="bg-gray-400 text-white px-6 py-2 rounded" disabled>
+                正在生成 PDF...
+              </button>
+            ) : (
+              <button className="bg-blue-600 text-white px-6 py-2 rounded hover:bg-blue-700">
+                下载 PDF 报告
+              </button>
+            )
+          }
+        </PDFDownloadLink>
       </div>
     </div>
   );
