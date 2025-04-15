@@ -93,7 +93,7 @@ export default function KnowledgeModule({ onScoreChange, onInputsChange }) {
     }
     if (onInputsChange) {
       onInputsChange({
-        knowLedgeLevel: knowledge,
+        knowledgeLevel: knowledge,
         teamLevel: team,
         widthLevel: width
       });
